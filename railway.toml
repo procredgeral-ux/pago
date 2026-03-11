@@ -2,7 +2,8 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "npm run start"
+# Usar o servidor standalone correto
+startCommand = "node .next/standalone/server.js"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
@@ -11,15 +12,19 @@ restartPolicyMaxRetries = 3
 [nixpacks]
 # Force Node.js 20
 node-version = "20"
+# Desativar cache do Nixpacks para evitar builds sujos
+no-cache = true
 
 [phases.setup]
 nixPkgs = ["nodejs_20", "npm-10_x"]
 
 [phases.build]
+# Sempre limpar cache e gerar Prisma antes do build
 cmds = [
     "node --version",
     "npm ci",
     "rm -rf .next",
-    "npx prisma generate || echo 'Prisma generate skipped'",
+    "rm -rf node_modules/.cache",
+    "npx prisma generate",
     "npm run build"
 ]
