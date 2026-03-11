@@ -2,6 +2,8 @@
 const nextConfig = {
   output: 'standalone',
   distDir: '.next',
+  // Fix: Prevent Pages Router error page conflicts in App Router
+  pages: {},
   images: {
     unoptimized: true,
     remotePatterns: [
