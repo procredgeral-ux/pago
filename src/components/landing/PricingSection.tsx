@@ -154,8 +154,8 @@ export function PricingSection() {
 
       const data = await response.json()
       
-      // Redirecionar para o checkout do Mercado Pago (sandbox em teste)
-      window.location.href = data.sandbox_url || data.checkout_url
+      // Redirecionar para o checkout do Mercado Pago (produção)
+      window.location.href = data.checkout_url
     } catch (error) {
       toast({
         title: 'Erro',

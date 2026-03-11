@@ -71,7 +71,7 @@ export function LandingHeader() {
       }
 
       const data = await response.json()
-      window.location.href = data.sandbox_url || data.checkout_url
+      window.location.href = data.checkout_url
     } catch (error) {
       toast({
         title: 'Erro',
