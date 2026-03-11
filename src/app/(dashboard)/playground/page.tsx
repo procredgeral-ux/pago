@@ -79,7 +79,7 @@ export default async function PlaygroundPage() {
               FREE Plan - Browse Only
             </CardTitle>
             <CardDescription className="text-gray-300">
-              You're on the FREE plan. You can browse the API marketplace and see documentation, but cannot make actual API calls.
+              You&apos;re on the FREE plan. You can browse the API marketplace and see documentation, but cannot make actual API calls.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

@@ -240,7 +240,7 @@ export default async function PricingPage() {
               <h3 className="text-2xl font-bold text-white mb-2">Need More Than 50,000 Queries?</h3>
               <p className="text-gray-300">
                 Contact our sales team for custom enterprise pricing with even bigger discounts.
-                We'll create a tailored package for your specific needs.
+                We&apos;ll create a tailored package for your specific needs.
               </p>
             </div>
             <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">

@@ -13,6 +13,7 @@ interface PixPaymentModalProps {
   planType: 'basic' | 'pro' | 'enterprise'
   planName: string
   amount: number
+  demoMode?: boolean // Modo teste sem autenticação
 }
 
 interface PaymentData {
@@ -29,7 +30,8 @@ export function PixPaymentModal({
   onClose, 
   planType, 
   planName, 
-  amount 
+  amount,
+  demoMode = false
 }: PixPaymentModalProps) {
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null)
   const [loading, setLoading] = useState(false)
@@ -40,7 +42,10 @@ export function PixPaymentModal({
   const createPayment = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/payments/pix/create', {
+      // Usar endpoint demo em modo teste (sem autenticação)
+      const endpoint = demoMode ? '/api/payments/pix/demo' : '/api/payments/pix/create'
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ planType, amount }),
@@ -62,7 +67,7 @@ export function PixPaymentModal({
     } finally {
       setLoading(false)
     }
-  }, [planType, amount])
+  }, [planType, amount, demoMode])
 
   const checkStatus = useCallback(async () => {
     if (!paymentData?.payment_id) return

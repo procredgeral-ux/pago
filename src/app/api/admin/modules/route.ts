@@ -115,7 +115,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const module = await prisma.api_modules.create({
+    const newModule = await prisma.api_modules.create({
       data: {
         id: randomUUID(),
         name,
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
       }
     })
 
-    return NextResponse.json(module, { status: 201 })
+    return NextResponse.json(newModule, { status: 201 })
   } catch (error: any) {
     console.error('Error creating module:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })

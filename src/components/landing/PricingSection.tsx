@@ -1,13 +1,27 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Check } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
+import { toast } from '@/components/ui/use-toast'
+import { createClient } from '@/lib/supabase/client'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 const plans = [
   {
+    id: 'free',
     name: 'Free',
     price: '$0',
+    priceCents: 0,
     period: 'forever',
     description: 'Perfect for testing and small projects',
     popular: false,
@@ -21,10 +35,13 @@ const plans = [
     ],
     cta: 'Get Started Free',
     href: '/register',
+    isPaid: false,
   },
   {
+    id: 'basic',
     name: 'Basic',
     price: '$29',
+    priceCents: 2900,
     period: '/month',
     description: 'Ideal for small to medium businesses',
     popular: false,
@@ -39,10 +56,13 @@ const plans = [
     ],
     cta: 'Start Basic Plan',
     href: '/register',
+    isPaid: true,
   },
   {
+    id: 'pro',
     name: 'Pro',
     price: '$99',
+    priceCents: 9900,
     period: '/month',
     description: 'For growing companies with high volume',
     popular: true,
@@ -58,13 +78,17 @@ const plans = [
     ],
     cta: 'Start Pro Plan',
     href: '/register',
+    isPaid: true,
   },
   {
+    id: 'enterprise',
     name: 'Enterprise',
     price: '$499',
+    priceCents: 49900,
     period: '/month',
     description: 'Unlimited access for large organizations',
     popular: false,
+    ctaColor: 'bg-[#1D203A] hover:bg-[#2a2d4a] text-white',
     features: [
       'Unlimited API calls',
       'No rate limits',
@@ -78,10 +102,71 @@ const plans = [
     ],
     cta: 'Contact Sales',
     href: '/register',
+    isPaid: true,
   },
 ]
 
 export function PricingSection() {
+  const [loading, setLoading] = useState(false)
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const [user, setUser] = useState<any>(null)
+  const [authChecked, setAuthChecked] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setAuthChecked(true)
+    }
+    checkAuth()
+  }, [])
+
+  const handleCheckout = async (plan: typeof plans[0]) => {
+    if (!plan.isPaid) return
+    
+    // Se não está logado, mostrar modal de autenticação
+    if (!user) {
+      setSelectedPlan(plan)
+      setShowAuthModal(true)
+      return
+    }
+    
+    setLoading(true)
+    setLoadingPlan(plan.id)
+    
+    try {
+      const response = await fetch('/api/payments/pix/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planType: plan.id,
+          planName: plan.name,
+          amount: plan.priceCents,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout')
+      }
+
+      const data = await response.json()
+      
+      // Redirecionar para o checkout do Mercado Pago (sandbox em teste)
+      window.location.href = data.sandbox_url || data.checkout_url
+    } catch (error) {
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível iniciar o checkout. Tente novamente.',
+        variant: 'destructive',
+      })
+      setLoading(false)
+      setLoadingPlan(null)
+    }
+  }
+
   return (
     <section id="pricing" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6 max-w-[1400px]">
@@ -91,6 +176,9 @@ export function PricingSection() {
           </h2>
           <p className="text-[18px] text-[#555866] max-w-3xl mx-auto">
             Choose the plan that fits your needs. All plans include access to all 6 API endpoints.
+            <span className="block mt-2 text-sm text-[#0069FF] font-medium">
+              💳 Checkout Mercado Pago - Pague com PIX
+            </span>
           </p>
         </div>
 
@@ -131,25 +219,74 @@ export function PricingSection() {
                   ))}
                 </ul>
 
-                <Link href={plan.href} className="block">
+                {plan.isPaid ? (
+                  // Plano pago - verifica auth antes de prosseguir
                   <Button
+                    onClick={() => handleCheckout(plan)}
+                    disabled={loading && loadingPlan === plan.id}
                     className={`w-full h-12 rounded-md font-semibold ${
-                      plan.popular
+                      plan.ctaColor || (plan.popular
                         ? 'bg-[#0069FF] hover:bg-[#0055DD] text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-[#1D203A]'
+                        : 'bg-gray-100 hover:bg-gray-200 text-[#1D203A]')
                     }`}
                   >
-                    {plan.cta}
+                    {loading && loadingPlan === plan.id ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      plan.cta
+                    )}
                   </Button>
-                </Link>
+                ) : (
+                  // Plano free - link para registro
+                  <Link href={plan.href} className="block">
+                    <Button
+                      className={`w-full h-12 rounded-md font-semibold ${
+                        plan.popular
+                          ? 'bg-[#0069FF] hover:bg-[#0055DD] text-white'
+                          : 'bg-gray-100 hover:bg-gray-200 text-[#1D203A]'
+                      }`}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
+                )}
               </CardContent>
             </Card>
           ))}
         </div>
 
+        {/* Modal de Autenticação */}
+        <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-center text-xl">
+                {selectedPlan?.name ? `Assinar Plano ${selectedPlan.name}` : 'Criar Conta'}
+              </DialogTitle>
+              <DialogDescription className="text-center">
+                Para assinar um plano pago, você precisa criar uma conta ou fazer login.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-3 mt-4">
+              <Link href="/register" className="w-full">
+                <Button className="w-full bg-[#0069FF] hover:bg-[#0055DD] text-white h-12">
+                  Criar Conta Grátis
+                </Button>
+              </Link>
+              <Link href="/login" className="w-full">
+                <Button variant="outline" className="w-full h-12">
+                  Já tenho conta - Fazer Login
+                </Button>
+              </Link>
+            </div>
+            <p className="text-center text-sm text-gray-500 mt-4">
+              É rápido, grátis e leva menos de 1 minuto.
+            </p>
+          </DialogContent>
+        </Dialog>
+
         <div className="text-center">
           <p className="text-[16px] text-[#555866] mb-4">
-            All plans include API documentation, usage analytics, and access to all endpoints
+            Pagamentos processados com segurança pelo Mercado Pago
           </p>
           <p className="text-[14px] text-[#555866]">
             Need a custom plan? <Link href="/register" className="text-[#0069FF] hover:underline font-semibold">Contact our sales team</Link>

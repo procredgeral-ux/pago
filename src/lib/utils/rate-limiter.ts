@@ -127,7 +127,7 @@ export async function checkAndDeductCredits(
     // For pay-per-query (credits plan), check balance and deduct
     if (planType === 'credits') {
       // Find the module by endpoint
-      const module = await prisma.api_modules.findFirst({
+      const apiModule = await prisma.api_modules.findFirst({
         where: { endpoint },
         select: {
           id: true,
@@ -137,7 +137,7 @@ export async function checkAndDeductCredits(
         },
       })
 
-      if (!module) {
+      if (!apiModule) {
         return {
           allowed: false,
           error: 'API endpoint not found',
@@ -148,7 +148,7 @@ export async function checkAndDeductCredits(
         }
       }
 
-      if (module.status !== 'active') {
+      if (apiModule.status !== 'active') {
         return {
           allowed: false,
           error: 'API endpoint is not currently available',
@@ -177,14 +177,14 @@ export async function checkAndDeductCredits(
       }
 
       // Check if user has enough credits
-      if (user.credits_balance < module.price_per_query) {
+      if (user.credits_balance < apiModule.price_per_query) {
         return {
           allowed: false,
-          error: `Insufficient credits. Required: ${module.price_per_query}, Available: ${user.credits_balance}`,
+          error: `Insufficient credits. Required: ${apiModule.price_per_query}, Available: ${user.credits_balance}`,
           response: NextResponse.json(
             {
               error: 'Insufficient credits',
-              required: module.price_per_query,
+              required: apiModule.price_per_query,
               available: user.credits_balance,
               message: 'Please purchase more credits to continue using the API',
             },
@@ -198,10 +198,10 @@ export async function checkAndDeductCredits(
         where: { id: userId },
         data: {
           credits_balance: {
-            decrement: module.price_per_query,
+            decrement: apiModule.price_per_query,
           },
           credits_used: {
-            increment: module.price_per_query,
+            increment: apiModule.price_per_query,
           },
         },
         select: { credits_balance: true },
@@ -209,8 +209,8 @@ export async function checkAndDeductCredits(
 
       return {
         allowed: true,
-        moduleName: module.name,
-        creditsCost: module.price_per_query,
+        moduleName: apiModule.name,
+        creditsCost: apiModule.price_per_query,
         creditsRemaining: updatedUser.credits_balance,
       }
     }
@@ -263,12 +263,12 @@ export async function logApiUsage(
 ): Promise<void> {
   try {
     // Find module by endpoint
-    const module = await prisma.api_modules.findFirst({
+    const apiModule = await prisma.api_modules.findFirst({
       where: { endpoint },
       select: { id: true },
     })
 
-    if (!module) {
+    if (!apiModule) {
       console.warn(`Module not found for endpoint: ${endpoint}`)
       return
     }
@@ -286,7 +286,7 @@ export async function logApiUsage(
 
     await prisma.module_usage_logs.create({
       data: {
-        module_id: module.id,
+        module_id: apiModule.id,
         contractor_id: user.contractor_id,
         user_id: userId,
         response_code: statusCode,

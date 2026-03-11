@@ -15,13 +15,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LogOut, Settings, User as UserIcon, CreditCard } from 'lucide-react'
+import { LogOut, Settings, User as UserIcon, CreditCard, Loader2 } from 'lucide-react'
 import { clearSession } from '@/lib/utils/session'
+import { toast } from '@/components/ui/use-toast'
 
 export function LandingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [userName, setUserName] = useState<string | null>(null)
+  const [testLoading, setTestLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -50,6 +52,35 @@ export function LandingHeader() {
       subscription.unsubscribe()
     }
   }, [supabase])
+
+  const handleTestCheckout = async () => {
+    setTestLoading(true)
+    try {
+      const response = await fetch('/api/payments/pix/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planType: 'basic',
+          planName: 'Plano Teste',
+          amount: 2900,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout')
+      }
+
+      const data = await response.json()
+      window.location.href = data.sandbox_url || data.checkout_url
+    } catch (error) {
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível iniciar o checkout de teste.',
+        variant: 'destructive',
+      })
+      setTestLoading(false)
+    }
+  }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -95,6 +126,17 @@ export function LandingHeader() {
             >
               Contact
             </Link>
+            <Button
+              onClick={handleTestCheckout}
+              disabled={testLoading}
+              className="bg-[#00C853] hover:bg-[#00A344] text-white font-medium text-[14px] h-9 px-4 rounded-md"
+            >
+              {testLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                'Test'
+              )}
+            </Button>
           </nav>
 
           {/* Auth Buttons / User Menu - Desktop */}

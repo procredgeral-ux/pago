@@ -25,7 +25,7 @@ export async function GET(
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const module = await prisma.api_modules.findUnique({
+    const apiModule = await prisma.api_modules.findUnique({
       where: { id },
       include: {
         _count: {
@@ -34,11 +34,11 @@ export async function GET(
       }
     })
 
-    if (!module) {
+    if (!apiModule) {
       return NextResponse.json({ error: 'Module not found' }, { status: 404 })
     }
 
-    return NextResponse.json(module)
+    return NextResponse.json(apiModule)
   } catch (error: any) {
     console.error('Error fetching module:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
@@ -110,7 +110,7 @@ export async function PUT(
       }
     }
 
-    const module = await prisma.api_modules.update({
+    const updatedModule = await prisma.api_modules.update({
       where: { id },
       data: {
         ...(name !== undefined && { name }),
@@ -137,7 +137,7 @@ export async function PUT(
       }
     })
 
-    return NextResponse.json(module)
+    return NextResponse.json(updatedModule)
   } catch (error: any) {
     console.error('Error updating module:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
