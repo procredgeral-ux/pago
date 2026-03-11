@@ -1,5 +1,9 @@
 'use client'
 
+// Forçar renderização dinâmica para evitar conflito Pages Router
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export default function NotFound() {
   return (
     <html>
