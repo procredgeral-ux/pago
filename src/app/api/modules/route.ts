@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 // GET - List all visible modules (public API for marketplace)
 export async function GET(request: Request) {
   try {
