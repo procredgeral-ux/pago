@@ -6,6 +6,8 @@ builder = "DOCKERFILE"
 startCommand = "npm start"
 # Rodar migrations do Prisma antes de cada deploy
 preDeployCommand = "npx prisma migrate deploy"
+# Porta que o Next.js usa
+port = 8080
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
