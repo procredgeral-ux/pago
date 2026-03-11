@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Toaster } from '@/components/ui/toaster'
-import { SessionSync } from '@/components/session-sync'
+import { LayoutClient } from './layout-client'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,6 +15,8 @@ export const metadata: Metadata = {
   description: 'The most revolutionary datatech in the country - Professional API management, rate limiting, and usage tracking platform',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({
   children,
 }: {
@@ -24,9 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionSync />
-        {children}
-        <Toaster />
+        <LayoutClient>
+          {children}
+        </LayoutClient>
       </body>
     </html>
   )
