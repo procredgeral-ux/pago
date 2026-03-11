@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 export default function Custom500() {
@@ -13,9 +14,9 @@ export default function Custom500() {
     }}>
       <h1>500 - Erro do servidor</h1>
       <p>Ocorreu um erro interno no servidor.</p>
-      <a href="/" style={{ color: '#0069FF', marginTop: '16px' }}>
+      <Link href="/" style={{ color: '#0069FF', marginTop: '16px' }}>
         Voltar para a página inicial
-      </a>
+      </Link>
     </div>
   );
 }

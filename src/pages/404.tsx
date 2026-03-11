@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 export default function Custom404() {
@@ -13,9 +14,9 @@ export default function Custom404() {
     }}>
       <h1>404 - Página não encontrada</h1>
       <p>A página que você está procurando não existe.</p>
-      <a href="/" style={{ color: '#0069FF', marginTop: '16px' }}>
+      <Link href="/" style={{ color: '#0069FF', marginTop: '16px' }}>
         Voltar para a página inicial
-      </a>
+      </Link>
     </div>
   );
 }
