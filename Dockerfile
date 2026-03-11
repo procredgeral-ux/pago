@@ -22,7 +22,7 @@ COPY . .
 # Limpar qualquer cache anterior
 RUN rm -rf .next node_modules/.cache
 
-# Build da aplicação
+# Build da aplicação (sem standalone)
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 RUN npm run build
@@ -43,15 +43,16 @@ ENV HOSTNAME="0.0.0.0"
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copiar arquivos necessários do build
-COPY --from=base --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=base --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copiar arquivos necessários (modo normal, não standalone)
+COPY --from=base --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=base --chown=nextjs:nodejs /app/public ./public
-COPY --from=base --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=base --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=base --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=base --chown=nextjs:nodejs /app/package*.json ./
+COPY --from=base --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# Usar npm start em vez de node server.js
+CMD ["npm", "start"]

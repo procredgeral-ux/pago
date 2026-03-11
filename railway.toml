@@ -2,12 +2,9 @@
 builder = "DOCKERFILE"
 
 [deploy]
-# Usar o servidor standalone correto
-startCommand = "node server.js"
+# Usar npm start (modo normal, não standalone)
+startCommand = "npm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
-
-# Desativar cache do Railway
-disallowPublicNetworking = false
