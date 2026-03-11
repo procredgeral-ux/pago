@@ -1,5 +1,8 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -14,8 +17,6 @@ import { PhoneInputField } from '@/components/ui/phone-input'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { hasValidSession } from '@/lib/utils/session'
-
-export const dynamic = 'force-dynamic'
 
 export default function HomePage() {
   const [phoneNumber, setPhoneNumber] = useState('')
