@@ -15,6 +15,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { hasValidSession } from '@/lib/utils/session'
 
+export const dynamic = 'force-dynamic'
+
 export default function HomePage() {
   const [phoneNumber, setPhoneNumber] = useState('')
   const router = useRouter()
