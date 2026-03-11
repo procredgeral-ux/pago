@@ -9,9 +9,11 @@ WORKDIR /app
 # Copiar arquivos de dependências primeiro (cache eficiente)
 COPY package*.json ./
 COPY prisma ./prisma/
+COPY postcss.config.* ./
+COPY tailwind.config.* ./
 
-# Instalar dependências
-RUN npm ci --omit=dev
+# Instalar TODAS as dependências (incluindo dev) para o build
+RUN npm ci
 
 # Gerar Prisma Client
 RUN npx prisma generate
@@ -22,7 +24,7 @@ COPY . .
 # Limpar qualquer cache anterior
 RUN rm -rf .next node_modules/.cache
 
-# Build da aplicação (sem standalone)
+# Build da aplicação
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 RUN npm run build
