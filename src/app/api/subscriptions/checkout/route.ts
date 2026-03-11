@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { MercadoPagoConfig, PreApproval } from 'mercadopago'
-import { MP_PLANS } from '@/lib/mercadopago/client'
+import { MP_PLANS } from '@/lib/mercadoPagoConfig'
 
 const mp = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
 
