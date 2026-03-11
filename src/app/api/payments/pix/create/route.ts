@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { MercadoPagoConfig, Payment } from 'mercadopago'
-
-const mp = new MercadoPagoConfig({ 
-  accessToken: process.env.MP_ACCESS_TOKEN! 
-})
+import { mpConfig, mpEnvironment } from '@/lib/mercadoPago'
+import { Payment } from 'mercadopago'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log(`[PIX CREATE] Ambiente: ${mpEnvironment.environment} | Produção: ${mpEnvironment.isProduction}`)
+    
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -27,7 +26,7 @@ export async function POST(request: NextRequest) {
     const paymentAmount = amount || planValues[planType]?.amount || 2900
     const paymentDescription = description || planValues[planType]?.description || 'Pagamento BigDataCorp'
 
-    const payment = new Payment(mp)
+    const payment = new Payment(mpConfig)
     
     const response = await payment.create({
       body: {

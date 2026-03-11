@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { MercadoPagoConfig, PreApproval } from 'mercadopago'
-import { MP_PLANS } from '@/lib/mercadoPagoConfig'
-
-const mp = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
+import { mpConfig, mpEnvironment, MP_PLANS } from '@/lib/mercadoPago'
+import { PreApproval } from 'mercadopago'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log(`[CHECKOUT] Ambiente: ${mpEnvironment.environment} | Produção: ${mpEnvironment.isProduction}`)
+    
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Plano inválido' }, { status: 400 })
     }
 
-    const preApproval = new PreApproval(mp)
+    const preApproval = new PreApproval(mpConfig)
     const response = await preApproval.create({
       body: {
         preapproval_plan_id: plan.preapprovalPlanId,

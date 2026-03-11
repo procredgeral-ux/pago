@@ -10,13 +10,15 @@ import {
   Building2,
   Calendar,
   DollarSign,
-  TrendingUp
+  TrendingUp,
+  TestTube
 } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { CheckoutButton } from '@/components/billing/checkout-button'
 import { PortalButton } from '@/components/billing/portal-button'
+import { PixCheckoutButton } from '@/components/billing/pix-checkout-button'
 
 const plans = [
   {
@@ -192,6 +194,56 @@ export default async function BillingPage() {
                 Gerenciar Forma de Pagamento
               </PortalButton>
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Test PIX Payment - R$ 5,00 */}
+      <Card className="bg-green-500/10 border-green-500/30 backdrop-blur">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl text-white flex items-center gap-2">
+                <TestTube className="h-6 w-6 text-green-500" />
+                Testar Pagamento PIX
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Gere uma cobrança de teste para validar o sistema de pagamentos
+              </CardDescription>
+            </div>
+            <Badge variant="outline" className="border-green-500 text-green-400">
+              DEMO
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <div className="text-sm text-gray-400 mb-1">Valor do Teste</div>
+              <div className="text-3xl font-bold text-green-400">
+                R$ 5,00
+              </div>
+              <p className="text-sm text-gray-400 mt-2">
+                Cobrança de teste para validar integração com Mercado Pago
+              </p>
+            </div>
+            <div className="flex items-end">
+              <PixCheckoutButton
+                planType="basic"
+                planName="Teste - R$ 5,00"
+                amount={500}
+                className="w-full bg-green-600 hover:bg-green-700 text-white"
+              >
+                <TestTube className="mr-2 h-4 w-4" />
+                Gerar PIX de Teste (R$ 5,00)
+              </PixCheckoutButton>
+            </div>
+          </div>
+          <div className="p-3 bg-black/30 rounded-lg text-sm text-gray-400">
+            <p>
+              <strong>Modo Demo:</strong> Esta cobrança é apenas para testes. 
+              Use as credenciais de teste do Mercado Pago para simular pagamentos.
+            </p>
           </div>
         </CardContent>
       </Card>

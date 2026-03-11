@@ -1,7 +1,7 @@
 import { MercadoPagoConfig } from 'mercadopago'
 
-// Determina o ambiente de pagamento
-const environment = process.env.MP_ENVIRONMENT || 'development'
+// Determina o ambiente de pagamento (padrão: production para pagamentos reais)
+const environment = process.env.MP_ENVIRONMENT || 'production'
 const isProduction = environment === 'production'
 
 // Seleciona as credenciais baseadas no ambiente
@@ -26,10 +26,13 @@ if (!publicKey) {
   console.error(`[Mercado Pago] ERRO: MP_${isProduction ? 'PROD' : 'TEST'}_PUBLIC_KEY não configurado`)
 }
 
-// Configuração do cliente
+// Configuração do cliente (exportado como mp e mpConfig para compatibilidade)
 export const mpConfig = new MercadoPagoConfig({
   accessToken: accessToken!,
 })
+
+// Alias para compatibilidade
+export const mp = mpConfig
 
 // Exporta informações do ambiente
 export const mpEnvironment = {
@@ -45,3 +48,27 @@ export const mpEnvironment = {
 console.log(`[Mercado Pago] Ambiente: ${environment.toUpperCase()}`)
 console.log(`[Mercado Pago] Token: ${accessToken?.substring(0, 15)}...`)
 console.log(`[Mercado Pago] Modo: ${isProduction ? '⚠️ PRODUÇÃO (pagamentos reais)' : '✅ TESTE (sandbox)'}`)
+
+// Planos para assinaturas
+export const MP_PLANS = {
+  free: {
+    name: 'Free',
+    price: 0,
+    preapprovalPlanId: null,
+  },
+  basic: {
+    name: 'Basic',
+    price: 29,
+    preapprovalPlanId: process.env.MP_BASIC_PLAN_ID,
+  },
+  pro: {
+    name: 'Pro',
+    price: 99,
+    preapprovalPlanId: process.env.MP_PRO_PLAN_ID,
+  },
+  enterprise: {
+    name: 'Enterprise',
+    price: 499,
+    preapprovalPlanId: process.env.MP_ENTERPRISE_PLAN_ID,
+  },
+}
