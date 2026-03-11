@@ -20,5 +20,6 @@ cmds = [
     "node --version",
     "npm ci",
     "rm -rf .next",
+    "npx prisma generate || echo 'Prisma generate skipped'",
     "npm run build"
 ]
