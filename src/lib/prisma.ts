@@ -1,5 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 
+// Log da DATABASE_URL para debug (oculta senha)
+const dbUrl = process.env.DATABASE_URL || 'NÃO DEFINIDA'
+const maskedUrl = dbUrl.replace(/:[^:@]+@/, ':***@')
+console.log(`[Prisma] DATABASE_URL: ${maskedUrl}`)
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
