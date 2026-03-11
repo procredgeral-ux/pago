@@ -26,6 +26,10 @@ const nextConfig = {
   experimental: {
     missingSuspenseWithCSRBailout: false,
   },
+  // Disable static generation for problematic pages
+  async generateStaticParams() {
+    return []
+  },
 }
 
 module.exports = nextConfig
