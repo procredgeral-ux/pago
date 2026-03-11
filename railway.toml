@@ -19,5 +19,6 @@ nixPkgs = ["nodejs_20", "npm-10_x"]
 cmds = [
     "node --version",
     "npm ci",
+    "rm -rf .next",
     "npm run build"
 ]
